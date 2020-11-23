@@ -1,0 +1,8 @@
+{
+	"SourceFiles": [
+		"D:\\neople_test\\SSM\\Source\\SSM\\SSM.Build.cs",
+		"D:\\neople_test\\SSM\\Source\\SSM.Target.cs",
+		"D:\\neople_test\\SSM\\Source\\SSMEditor.Target.cs"
+	],
+	"EngineVersion": "4.25.4"
+}
