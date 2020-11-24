@@ -7,19 +7,21 @@ public class SSM : ModuleRules
 	public SSM(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+		PrivatePCHHeaderFile = "SSM.h";
 
 		PublicDependencyModuleNames.AddRange( new string[]
 											  {
 												  "Core", 
 												  "CoreUObject", 
 												  "Engine", 
-												  "InputCore"
+												  "InputCore",
 											  } );
 
 		PublicIncludePaths.AddRange( new string[]
 									 {
 										 "SSM/Core",
-										 "SSM/Pawn"
+										 "SSM/Pawn",
+										 "SSM/Content",
 									 });
 	}
 }
