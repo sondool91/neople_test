@@ -41,10 +41,16 @@ ACCharacter::ACCharacter()
 	GetCharacterMovement()->GroundFriction = 3.f;
 	GetCharacterMovement()->MaxWalkSpeed = 600.f;
 	GetCharacterMovement()->MaxFlySpeed = 600.f;
+
+	_FireCount.Add( ESkillType::Special_1, 0 );
+	_FireCount.Add( ESkillType::Special_2, 0 );
+	_FireCount.Add( ESkillType::Special_3, 0 );
+	_FireCount.Add( ESkillType::Special_4, 0 );
 }
 
-void ACCharacter::FireSkill( ESkillType skill )
+void ACCharacter::PawnStartFire(uint8 FireModeNum)
 {
+	ESkillType skill = static_cast<ESkillType>(FireModeNum);
 	if( ensure( skill != ESkillType::None ) == false )
 		return;
 
@@ -68,6 +74,8 @@ void ACCharacter::FireSkill( ESkillType skill )
 	if( false == IsValid( newProjectile ) )
 		return;
 
+	_SetFireCount( skill, _FireCount[skill] + 1 );
+
 	if( _ShowDebug == true )
 	{
 		auto startLoc = fireTransform.GetRotation().Vector() + fireTransform.GetLocation();
@@ -76,4 +84,29 @@ void ACCharacter::FireSkill( ESkillType skill )
 		DrawDebugPoint( GetWorld(), endLoc, 10.f, FColor::Green, false, 3.f );
 		DrawDebugLine( GetWorld(), startLoc, endLoc, FColor::Blue, false, 3.f );
 	}
+}
+
+void ACCharacter::ChangeChargingFirePercent( float percent )
+{
+	if( OnChangeChargingFirePercent.IsBound() == true )
+		OnChangeChargingFirePercent.Broadcast( percent );
+}
+
+void ACCharacter::ResetFireCount()
+{
+	for( auto& pair : _FireCount )
+	{
+		_SetFireCount( pair.Key, 0 );
+	}
+}
+
+void ACCharacter::_SetFireCount(ESkillType skill, int fireCount)
+{
+	if( _FireCount.Contains( skill ) == false )
+		return;
+	
+	_FireCount[skill] = fireCount;
+
+	if( OnChangedFireCount.IsBound() == true )
+		OnChangedFireCount.Broadcast( skill, _FireCount[skill] );
 }

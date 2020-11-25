@@ -1,7 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "CGameMode.h"
-#include "CCharacter.h"
 #include "CPlayerController.h"
 #include "UObject/ConstructorHelpers.h"
 

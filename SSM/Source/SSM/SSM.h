@@ -76,6 +76,20 @@ namespace Helper
 		}
 		return newActor;
 	}
+
+	template<class T>
+	T* GetMyCharacter( const UObject* worldContextObject )
+	{
+		if( UWorld* world = GEngine->GetWorldFromContextObject( worldContextObject, EGetWorldErrorMode::LogAndReturnNull ) )
+		{
+			if( auto ctrl = world->GetFirstPlayerController() )
+			{
+				return ctrl->GetPawn<T>();
+			}
+		}
+		return nullptr;
+	}
+
 }
 
 #define P_ENUM_TO_STRING( Enum, value ) \

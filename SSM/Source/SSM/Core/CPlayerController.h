@@ -19,11 +19,14 @@ class ACPlayerController : public APlayerController
 
 protected:
 	UPROPERTY( EditAnywhere, Category = "C_Input", meta = (AllowPrivateAccess = true) )
-	float _InputLimitSecFor_Skill_1;
+	float _InputLimitSecFor_Skill_2;
 
 	UPROPERTY( EditAnywhere, Category = "C_Input", meta = (AllowPrivateAccess = true) )
 	float _InputLimitSecFor_Skill_3;
-	
+
+	bool _HasSkipReleasedFire1;
+	bool _HasSkipReleasedFire2;
+
 public:
 	ACPlayerController( const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get() );
 
@@ -33,7 +36,10 @@ public:
 	FKeyState* GetKeyState( FName actionName );
 	
 protected:
+	virtual void BeginPlayingState() override;
 	virtual void SetupInputComponent() override;
+
+	virtual void Tick( float DeltaSeconds ) override;
 
 	void _OnJump();
 	void _OnJumpStop();
@@ -53,4 +59,3 @@ FORCEINLINE ACCharacter* ACPlayerController::GetCCharacter() const
 	ensureMsgf( character, TEXT( "Must need~! ACCharacter~!" ) );
 	return character;
 }
-

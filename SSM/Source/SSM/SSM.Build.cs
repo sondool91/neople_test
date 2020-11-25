@@ -15,6 +15,7 @@ public class SSM : ModuleRules
 												  "CoreUObject", 
 												  "Engine", 
 												  "InputCore",
+												  "UMG",
 											  } );
 
 		PublicIncludePaths.AddRange( new string[]
