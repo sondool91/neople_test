@@ -75,9 +75,9 @@ void ACPlayerController::_OnFire1()
 	if( IsValid( GetWorld() ) == false )
 		return;
 
-	ESkillType skill = _DecideSkillToUse( INPUT_FIRE_1 );
+	ESkillType skill = _DecideSkillToFire( INPUT_FIRE_1 );
 	if( skill != ESkillType::None )
-		GetCCharacter()->UseSkill( skill );
+		GetCCharacter()->FireSkill( skill );
 }
 
 void ACPlayerController::_OnFire2()
@@ -85,12 +85,12 @@ void ACPlayerController::_OnFire2()
 	if( IsValid( GetWorld() ) == false )
 		return;
 
-	ESkillType skill = _DecideSkillToUse( INPUT_FIRE_2 );
+	ESkillType skill = _DecideSkillToFire( INPUT_FIRE_2 );
 	if( skill != ESkillType::None )
-		GetCCharacter()->UseSkill( skill );
+		GetCCharacter()->FireSkill( skill );
 }
 
-ESkillType ACPlayerController::_DecideSkillToUse( FName actionName )
+ESkillType ACPlayerController::_DecideSkillToFire( FName actionName )
 {
 	if( PlayerInput == nullptr )
 		return ESkillType::None;

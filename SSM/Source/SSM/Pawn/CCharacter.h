@@ -7,6 +7,7 @@
 #include "CCharacter.generated.h"
 
 
+class ACProjectile;
 enum class ESkillType : unsigned char;
 
 
@@ -16,17 +17,23 @@ class ACCharacter : public ACharacter
 	GENERATED_BODY()
 
 private:
-	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true") )
-	class UCameraComponent* SideViewCameraComponent;
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = true) )
+	class UCameraComponent* _SideViewCameraComponent;
 
-	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true") )
-	class USpringArmComponent* CameraBoom;
-		
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = true) )
+	class USpringArmComponent* _CameraBoom;
+
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = C_Projectile, meta = (AllowPrivateAccess = true) )
+	TMap<ESkillType, TSubclassOf<ACProjectile>> _ProjectileClassMap;
+
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = C_Projectile, meta = (AllowPrivateAccess = true) )
+	bool _ShowDebug = true;
+	
 public:
 	ACCharacter();
 
-	void UseSkill( ESkillType skill );
+	void FireSkill( ESkillType skill );
 
-	FORCEINLINE class UCameraComponent* GetSideViewCameraComponent() const { return SideViewCameraComponent; }
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	FORCEINLINE class UCameraComponent* GetSideViewCameraComponent() const { return _SideViewCameraComponent; }
+	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return _CameraBoom; }
 };

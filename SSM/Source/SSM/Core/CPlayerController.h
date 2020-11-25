@@ -43,7 +43,7 @@ protected:
 	void _OnFire1();
 	void _OnFire2();
 	
-	ESkillType _DecideSkillToUse( FName actionName );
+	ESkillType _DecideSkillToFire( FName actionName );
 };
 
 

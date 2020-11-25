@@ -1,12 +1,16 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "CCharacter.h"
+
+#include "DrawDebugHelpers.h"
 #include "SSM/SSM.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Battle/CBattleDefine.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "SSM/Actor/CProjectile.h"
 
 
 ACCharacter::ACCharacter()
@@ -17,17 +21,17 @@ ACCharacter::ACCharacter()
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 
-	CameraBoom = CreateDefaultSubobject<USpringArmComponent>( TEXT( "CameraBoom" ) );
-	CameraBoom->SetupAttachment( RootComponent );
-	CameraBoom->SetUsingAbsoluteRotation( true ); // Rotation of the character should not affect rotation of boom
-	CameraBoom->bDoCollisionTest = false;
-	CameraBoom->TargetArmLength = 500.f;
-	CameraBoom->SocketOffset = FVector( 0.f, 0.f, 75.f );
-	CameraBoom->SetRelativeRotation( FRotator( 0.f, 180.f, 0.f ) );
+	_CameraBoom = CreateDefaultSubobject<USpringArmComponent>( TEXT( "_CameraBoom" ) );
+	_CameraBoom->SetupAttachment( RootComponent );
+	_CameraBoom->SetUsingAbsoluteRotation( true ); // Rotation of the character should not affect rotation of boom
+	_CameraBoom->bDoCollisionTest = false;
+	_CameraBoom->TargetArmLength = 500.f;
+	_CameraBoom->SocketOffset = FVector( 0.f, 0.f, 75.f );
+	_CameraBoom->SetRelativeRotation( FRotator( 0.f, 180.f, 0.f ) );
 
-	SideViewCameraComponent = CreateDefaultSubobject<UCameraComponent>( TEXT( "SideViewCamera" ) );
-	SideViewCameraComponent->SetupAttachment( CameraBoom, USpringArmComponent::SocketName );
-	SideViewCameraComponent->bUsePawnControlRotation = false; // We don't want the controller rotating the camera
+	_SideViewCameraComponent = CreateDefaultSubobject<UCameraComponent>( TEXT( "SideViewCamera" ) );
+	_SideViewCameraComponent->SetupAttachment( _CameraBoom, USpringArmComponent::SocketName );
+	_SideViewCameraComponent->bUsePawnControlRotation = false; // We don't want the controller rotating the camera
 
 	GetCharacterMovement()->bOrientRotationToMovement = true; // Face in the direction we are moving..
 	GetCharacterMovement()->RotationRate = FRotator( 0.0f, 720.0f, 0.0f ); // ...at this rotation rate
@@ -39,10 +43,37 @@ ACCharacter::ACCharacter()
 	GetCharacterMovement()->MaxFlySpeed = 600.f;
 }
 
-void ACCharacter::UseSkill( ESkillType skill )
+void ACCharacter::FireSkill( ESkillType skill )
 {
-	if( ensure( skill != ESkillType::None ) )
+	if( ensure( skill != ESkillType::None ) == false )
 		return;
 
-	UE_LOG( LogSSM, Log, TEXT( "[%s] Skill[%s]" ), P_FUNCTION, *P_ENUM_TO_STRING( ESkillType, skill ) );
+	if( false == _ProjectileClassMap.Contains( skill ) )
+	{
+		ensureMsgf( false, TEXT( "Cannot found ProjectileClass by SkillType[%s]~!" ), *P_ENUM_TO_STRING( ESkillType, skill ) );
+		return;
+	}
+
+	auto fireTransform = ACProjectile::MakeFireTransform( GetMesh()->GetComponentLocation(), 
+														  GetActorRotation(),
+														  FVector( 0.f, 20.f, 50.f ) );
+	float launchSpeed = 100.f;
+	FVector velocity = GetActorRotation().Vector() * launchSpeed;
+
+	FFireParams fireParam;
+	fireParam.Velocity = velocity;
+	fireParam.ProjectileClass = _ProjectileClassMap[skill];
+
+	auto* newProjectile = ACProjectile::Create( GetWorld(), this, fireTransform, fireParam );
+	if( false == IsValid( newProjectile ) )
+		return;
+
+	if( _ShowDebug == true )
+	{
+		auto startLoc = fireTransform.GetRotation().Vector() + fireTransform.GetLocation();
+		auto endLoc = fireTransform.GetRotation().Vector() * 1000.f + fireTransform.GetLocation();
+		DrawDebugPoint( GetWorld(), startLoc, 10.f, FColor::Green, false, 3.f );
+		DrawDebugPoint( GetWorld(), endLoc, 10.f, FColor::Green, false, 3.f );
+		DrawDebugLine( GetWorld(), startLoc, endLoc, FColor::Blue, false, 3.f );
+	}
 }

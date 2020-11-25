@@ -21,6 +21,7 @@ public class SSM : ModuleRules
 									 {
 										 "SSM/Core",
 										 "SSM/Pawn",
+										 "SSM/Actor",
 										 "SSM/Content",
 									 });
 	}
